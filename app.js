@@ -4,6 +4,12 @@ const express = require("express");
 const http = require("http");
 const path = require("path");
 const socketIO = require("socket.io");
+//secruity packages
+const rateLimit = require("express-rate-limit");
+const helmet = require("helmet");
+var xss = require("xss-clean");
+var cors = require("cors");
+
 //routes
 const authRoutes = require("./routes/auth");
 const jobsRoutes = require("./routes/jobs");
@@ -20,14 +26,17 @@ const server = http.createServer(app);
 const io = socketIO(server);
 
 const createIO = new IO(io);
-
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
 const startServer = async (dbUri) => {
   try {
     await connectDB(dbUri);
     server.listen(port, () => {
-      console.log(
-        "server is connected to db and working and listening on port 5000"
-      );
+      console.log(`server is connected to db and listening on port ${port}`);
     });
   } catch (error) {
     console.log(error);
@@ -37,6 +46,10 @@ const startServer = async (dbUri) => {
 //middleware
 app.use(express.static(path.join(__dirname, "/public")));
 app.use(express.json());
+app.use(limiter);
+app.use(helmet());
+app.use(xss());
+
 //routes
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/jobs", auth, jobsRoutes);
