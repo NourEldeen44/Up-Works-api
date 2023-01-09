@@ -50,11 +50,7 @@ app.set("trust proxy", 1); // to trust reverse proxy in deployment
 //middleware
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(limiter);
-app.use(
-  helmet({
-    contentSecurityPolicy: false,
-  })
-);
+app.use(helmet());
 app.use(cors());
 app.use(xss());
 app.use(express.static(path.join(__dirname, "/public")));
