@@ -1,0 +1,556 @@
+openapi: 3.0.0
+info:
+  title: upworks
+  contact: {}
+  version: '1.0'
+servers:
+- url: https://upworks.onrender.com/api/v1
+  variables: {}
+paths:
+  /auth/login:
+    post:
+      tags:
+      - Auth
+      summary: login
+      operationId: login
+      parameters: []
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/loginrequest'
+              - example:
+                  email: client@email.com
+                  password: password
+            example:
+              email: client@email.com
+              password: password
+        required: true
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+      security: []
+  /auth/register:
+    post:
+      tags:
+      - Auth
+      summary: register
+      operationId: register
+      parameters: []
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/registerrequest'
+              - example:
+                  username: name
+                  email: freelancer@email.com
+                  password: password
+                  status: client
+                  skills: html,css,js,gis
+            example:
+              username: name
+              email: freelancer@email.com
+              password: password
+              status: client
+              skills: html,css,js,gis
+        required: true
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+      security: []
+  /jobs:
+    post:
+      tags:
+      - Jobs
+      summary: Create New Job
+      operationId: CreateNewJob
+      parameters: []
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/CreateNewJobRequest'
+              - example:
+                  title: dev
+                  description: new job for js devs sssssssssssssssssssssssssssssss
+                  skills: js,gis,html,dev
+            example:
+              title: dev
+              description: new job for js devs sssssssssssssssssssssssssssssss
+              skills: js,gis,html,dev
+        required: true
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+      security:
+      - bearer: []
+    get:
+      tags:
+      - Jobs
+      summary: Get All Jobs
+      operationId: GetAllJobs
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+      security:
+      - bearer: []
+  /jobs/{job_id}:
+    parameters:
+      - in: path
+        name: job_id
+        schema:
+          type: string
+        required: true
+        description: The user ID
+    get:
+      tags:
+      - Jobs
+      summary: Get Single Job
+      operationId: GetSingleJob
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+      security:
+      - bearer: []
+    patch:
+      tags:
+      - Jobs
+      summary: Update Job
+      operationId: UpdateJob
+      parameters: []
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/UpdateJobRequest'
+              - example:
+                  title: updated value title
+                  skills: gis,html
+                  numsOfFreelancers: 5
+            example:
+              title: updated value title
+              skills: gis,html
+              numsOfFreelancers: 5
+        required: true
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+      security:
+      - bearer: []
+    delete:
+      tags:
+      - Jobs
+      summary: Delete Job
+      operationId: DeleteJob
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+      security:
+      - bearer: []
+  /jobs/{job_id}/proposals:
+    parameters:
+      - in: path
+        name: job_id
+        schema:
+          type: string
+        required: true
+        description: The Job ID
+    post:
+      tags:
+      - Proposals
+      summary: Create Proposal
+      operationId: CreateProposal
+      parameters: []
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/CreateProposalRequest'
+              - example:
+                  content: hi this is the second proposal
+            example:
+              content: hi this is the second proposal
+        required: true
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+      security:
+      - bearer: []
+    get:
+      tags:
+      - Proposals
+      summary: Get Job Proposals
+      operationId: GetJobProposals
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+      security:
+      - bearer: []
+    delete:
+      tags:
+      - Proposals
+      summary: Delete Job  Proposals
+      operationId: DeleteJobProposals
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+      security:
+      - bearer: []
+  /jobs/{job_id}/proposals/{proposal_id}:
+    parameters:
+      - in: path
+        name: job_id
+        schema:
+          type: string
+        required: true
+        description: The Job ID
+      - in: path
+        name: proposal_id
+        schema:
+          type: string
+        required: true
+        description: The Job ID
+    patch:
+      tags:
+      - Proposals
+      summary: Update Proposal
+      operationId: UpdateProposal
+      parameters: []
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/UpdateProposalRequest'
+              - example:
+                  viewd: 'true'
+            example:
+              viewd: 'true'
+        required: true
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+      security:
+      - bearer: []
+    delete:
+      tags:
+      - Proposals
+      summary: Delete  Proposal
+      operationId: DeleteProposal
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+      security:
+      - bearer: []
+  /chats:
+    post:
+      tags:
+      - Chat
+      summary: Create Chat
+      operationId: CreateChat
+      parameters: []
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/CreateChatRequest'
+              - example:
+                  message: hello this is the first messgae from server
+                  otherUser_id: 63b6f422442f4069c620f2f9
+            example:
+              message: hello this is the first messgae from server
+              otherUser_id: 63b6f422442f4069c620f2f9
+        required: true
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+      security:
+      - bearer: []
+    get:
+      tags:
+      - Chat
+      summary: Get User Chat Rooms
+      operationId: GetUserChatRooms
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+      security:
+      - bearer: []
+  /chats/{chatRoom_id}:
+    parameters:
+      - in: path
+        name: chatRoom_id
+        schema:
+          type: string
+        required: true
+        description: The ID
+    post:
+      tags:
+      - Chat
+      summary: Send Message
+      operationId: SendMessage
+      parameters: []
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/SendMessageRequest'
+              - example:
+                  message: hello this is the 14 messgae from server
+                  otherUser_id: 63b99cb9b21b54184da319e3
+            example:
+              message: hello this is the 14 messgae from server
+              otherUser_id: 63b99cb9b21b54184da319e3
+        required: true
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+      security:
+      - bearer: []
+    get:
+      tags:
+      - Chat
+      summary: Get Chat Messages
+      operationId: GetChatMessages
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+      security:
+      - bearer: []
+    delete:
+      tags:
+      - Chat
+      summary: Delete Chat Messages
+      operationId: DeleteChatMessages
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+      security:
+      - bearer: []
+  /chats/{chatRoom_id}/{chatMessage_id}:
+    parameters:
+      - in: path
+        name: chatRoom_id
+        schema:
+          type: string
+        required: true
+        description: The ID
+      - in: path
+        name: chatMessage_id
+        schema:
+          type: string
+        required: true
+        description: The ID
+    delete:
+      tags:
+      - Chat
+      summary: Delete  Message
+      operationId: DeleteMessage
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+      security:
+      - bearer: []
+components:
+  schemas:
+    loginrequest:
+      title: loginrequest
+      required:
+      - email
+      - password
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      example:
+        email: client@email.com
+        password: password
+    registerrequest:
+      title: registerrequest
+      required:
+      - username
+      - email
+      - password
+      - status
+      - skills
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        status:
+          type: string
+        skills:
+          type: string
+      example:
+        username: name
+        email: freelancer@email.com
+        password: password
+        status: client
+        skills: html,css,js,gis
+    CreateNewJobRequest:
+      title: CreateNewJobRequest
+      required:
+      - title
+      - description
+      - skills
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        skills:
+          type: string
+      example:
+        title: dev
+        description: new job for js devs sssssssssssssssssssssssssssssss
+        skills: js,gis,html,dev
+    UpdateJobRequest:
+      title: UpdateJobRequest
+      required:
+      - title
+      - skills
+      - numsOfFreelancers
+      type: object
+      properties:
+        title:
+          type: string
+        skills:
+          type: string
+        numsOfFreelancers:
+          type: integer
+          format: int32
+      example:
+        title: updated value title
+        skills: gis,html
+        numsOfFreelancers: 5
+    CreateProposalRequest:
+      title: CreateProposalRequest
+      required:
+      - content
+      type: object
+      properties:
+        content:
+          type: string
+      example:
+        content: hi this is the second proposal
+    UpdateProposalRequest:
+      title: UpdateProposalRequest
+      required:
+      - viewd
+      type: object
+      properties:
+        viewd:
+          type: string
+      example:
+        viewd: 'true'
+    CreateChatRequest:
+      title: CreateChatRequest
+      required:
+      - message
+      - otherUser_id
+      type: object
+      properties:
+        message:
+          type: string
+        otherUser_id:
+          type: string
+      example:
+        message: hello this is the first messgae from server
+        otherUser_id: 63b6f422442f4069c620f2f9
+    SendMessageRequest:
+      title: SendMessageRequest
+      required:
+      - message
+      - otherUser_id
+      type: object
+      properties:
+        message:
+          type: string
+        otherUser_id:
+          type: string
+      example:
+        message: hello this is the 14 messgae from server
+        otherUser_id: 63b99cb9b21b54184da319e3
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+security: []
+tags:
+- name: Auth
+  description: ''
+- name: Jobs
+  description: ''
+- name: Proposals
+  description: ''
+- name: Chat
+  description: ''

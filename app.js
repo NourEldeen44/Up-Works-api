@@ -7,9 +7,11 @@ const socketIO = require("socket.io");
 //secruity packages
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
-var xss = require("xss-clean");
 var cors = require("cors");
-
+var xss = require("xss-clean");
+//docs
+const Yaml = require("yamljs");
+const swaggerUi = require("swagger-ui-express");
 //routes
 const authRoutes = require("./routes/auth");
 const jobsRoutes = require("./routes/jobs");
@@ -19,6 +21,7 @@ const notFound = require("./middleware/notFound");
 const errorHandler = require("./middleware/errorHandler");
 const auth = require("./middleware/authentication");
 const IO = require("./utils/io");
+const swaggerDocument = Yaml.load("./swagger.yaml");
 const port = process.env.PORT || 5000;
 const dbUri = process.env.DB_URI;
 const app = express();
@@ -42,13 +45,20 @@ const startServer = async (dbUri) => {
     console.log(error);
   }
 };
-
+//setters
+app.set("trust proxy", 1); // to trust reverse proxy in deployment
 //middleware
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use(limiter);
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  })
+);
+app.use(cors());
+app.use(xss());
 app.use(express.static(path.join(__dirname, "/public")));
 app.use(express.json());
-app.use(limiter);
-app.use(helmet());
-app.use(xss());
 
 //routes
 app.use("/api/v1/auth", authRoutes);
