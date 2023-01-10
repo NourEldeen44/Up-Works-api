@@ -17,7 +17,7 @@ const btn = document.getElementById("btn").addEventListener("click", () => {
 function sendMessage(msg) {
   socket.emit("message", { from: "id", to: "id", msg });
   fetch(
-    "https://upworks.onrender.com:10000/api/v1/api/v1/chats/63b9ab304a2060baaec319d3",
+    "https://upworks.onrender.com/api/v1/api/v1/chats/63b9ab304a2060baaec319d3",
     {
       method: "POST",
       headers: {
