@@ -51,7 +51,7 @@ app.set("trust proxy", 1); // to trust reverse proxy in deployment
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(limiter);
 app.use(helmet());
-app.use(cors());
+app.use(cors({ origin: "https://upworks.onrender.com" }));
 app.use(xss());
 app.use(express.static(path.join(__dirname, "/public")));
 app.use(express.json());
@@ -65,4 +65,3 @@ app.use(notFound);
 //errs
 app.use(errorHandler);
 startServer(dbUri);
-module.exports = { io };
