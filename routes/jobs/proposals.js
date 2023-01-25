@@ -8,10 +8,12 @@ const {
   deleteProposal,
   updateProposal,
   deleteJobProposals,
+  getFreelancerProposal,
 } = require("../../controllers/proposals");
 const router = express.Router({ mergeParams: true });
 router.get("/", clientAuth, getJobProposals);
-router.get("/:id", getSingleProposal);
+router.get("/prop/:id", getSingleProposal);
+router.get("/checkProp", getFreelancerProposal);
 router.post("/", freelancerAuth, createProposal);
 router.patch("/:id", clientAuth, updateProposal);
 router.delete("/:id", freelancerAuth, deleteProposal);

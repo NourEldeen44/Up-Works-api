@@ -25,6 +25,10 @@ const ProposalSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    freelancerName: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: { createdAt: true } }
 );

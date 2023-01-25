@@ -11,7 +11,7 @@ const getUserChatRooms = async (req, res) => {
   }).sort("-updatedAt");
   //pagination
   const page = Number(req.query.page) || 1;
-  const pageLimit = Number(req.query.limit) || 4;
+  const pageLimit = Number(req.query.limit) || 25;
   const pageSkip = pageLimit * (page - 1);
   result.skip(pageSkip).limit(pageLimit);
   //
@@ -20,15 +20,21 @@ const getUserChatRooms = async (req, res) => {
 };
 const getChatMessages = async (req, res) => {
   const { chat_id } = req.params;
-  const limit = Number(req.query.limit) || 5;
+  const { id: user_id } = req.user;
+  const limit = Number(req.query.limit) || 50;
   const chatRoom = await ChatRoom.findById(chat_id);
   if (!chatRoom) {
     throw new NotFoundError(`No Chat Found with id ${chat_id}`);
   }
+  if (!chatRoom.users_ids.includes(user_id)) {
+    throw new NotFoundError(`No Chat Found For this user with id ${chat_id}`);
+  }
   const chatMessages = await ChatMessage.find({ chatRoom_id: chat_id })
     .sort("-createdAt")
     .limit(limit);
-  res.status(StatusCodes.OK).json({ chatMessages, count: chatMessages.length });
+  res
+    .status(StatusCodes.OK)
+    .json({ chatMessages, count: chatMessages.length, chatRoom });
 };
 //
 const createChat = async (req, res) => {

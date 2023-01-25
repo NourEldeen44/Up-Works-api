@@ -44,6 +44,14 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    notifications: {
+      type: [String],
+      default: [],
+    },
+    inChatRoom: {
+      type: Boolean,
+      default: false,
+    },
   },
   {}
 );

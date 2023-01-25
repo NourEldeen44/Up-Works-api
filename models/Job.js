@@ -43,6 +43,12 @@ const JobSchema = new Schema(
       type: Number,
       default: 0,
     },
+    price: {
+      type: Number,
+      default: 5,
+      min: 5,
+      max: 1000,
+    },
   },
   { timestamps: true }
 );

@@ -1,5 +1,9 @@
 const { StatusCodes } = require("http-status-codes");
-const { BadRequestError, UnAuthorizedError } = require("../errors");
+const {
+  BadRequestError,
+  UnAuthorizedError,
+  NotFoundError,
+} = require("../errors");
 
 const User = require("../models/User");
 const register = async (req, res) => {
@@ -57,4 +61,39 @@ const login = async (req, res) => {
     token,
   });
 };
-module.exports = { register, login };
+const getUserInfo = async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findById(id);
+  if (!user) {
+    throw new NotFoundError(`No User Found with id ${id}`);
+  }
+  res.status(StatusCodes.OK).json({
+    _id: user._id,
+    username: user.username,
+    email: user.email,
+    notifications: user.notifications,
+    connected: user.connected,
+    inChatRoom: user.inChatRoom,
+  });
+};
+const updateUserNotifications = async (req, res) => {
+  const { id } = req.params;
+  const { notifications } = req.body;
+  if (!notifications) {
+    throw new BadRequestError("Notifications is required as an array!");
+  }
+  const user = await User.findByIdAndUpdate(
+    id,
+    { notifications },
+    { new: true }
+  );
+  if (!user) {
+    throw new NotFoundError(`No User Found with id ${id}`);
+  }
+  res.status(StatusCodes.OK).json({
+    username: user.username,
+    email: user.email,
+    notifications: user.notifications,
+  });
+};
+module.exports = { register, login, getUserInfo, updateUserNotifications };

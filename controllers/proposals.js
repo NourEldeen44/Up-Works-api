@@ -1,5 +1,9 @@
 const { StatusCodes } = require("http-status-codes");
-const { BadRequestError, NotFoundError } = require("../errors");
+const {
+  BadRequestError,
+  NotFoundError,
+  UnAuthorizedError,
+} = require("../errors");
 const Proposal = require("../models/Proposal");
 const Job = require("../models/Job");
 
@@ -16,8 +20,21 @@ const getSingleProposal = async (req, res) => {
   }
   res.status(StatusCodes.OK).json({ proposal });
 };
-const createProposal = async (req, res) => {
+const getFreelancerProposal = async (req, res) => {
+  const { job_id } = req.params;
   const { id: user_id } = req.user;
+  const proposalData = { createdBy: user_id, job_id };
+  const proposal = await Proposal.findOne(proposalData);
+  if (!proposal) {
+    throw new NotFoundError(
+      `No Proposal Found in this job with for this freelancer`
+    );
+  }
+  res.status(StatusCodes.OK).json({ proposal });
+};
+
+const createProposal = async (req, res) => {
+  const { id: user_id, username } = req.user;
   const { job_id } = req.params;
   const { content } = req.body;
   if (!content) {
@@ -29,8 +46,23 @@ const createProposal = async (req, res) => {
   if (!job) {
     throw new NotFoundError(`No Job Found with id ${job_id}`);
   }
-  const proposalData = { createdBy: user_id, job_id, content };
+  const proposalData = {
+    createdBy: user_id,
+    job_id,
+    content,
+    freelancerName: username,
+  };
+  const checkProposalExistance = await Proposal.findOne({
+    createdBy: user_id,
+    job_id,
+  });
+  if (checkProposalExistance) {
+    throw new UnAuthorizedError("Un Authorized to Post more than one Proposal");
+  }
   const proposal = await Proposal.create({ ...proposalData });
+  await Job.findByIdAndUpdate(job_id, {
+    numsOfProposals: Number(job.numsOfProposals) + 1,
+  });
   res.status(StatusCodes.OK).json({
     msg: "Proposal created and sent successfuly",
     success: true,
@@ -65,6 +97,10 @@ const deleteProposal = async (req, res) => {
   if (!deletedProposal) {
     throw new NotFoundError(`No Proposal Found with id ${id}`);
   }
+  const job = await Job.findById(deletedProposal.job_id);
+  await Job.findByIdAndUpdate(deletedProposal.job_id, {
+    numsOfProposals: Number(job.numsOfProposals) + 1,
+  });
   res
     .status(StatusCodes.OK)
     .json({ msg: `proposal deleted successfuly`, success: true });
@@ -85,6 +121,7 @@ const deleteJobProposals = async (req, res) => {
 module.exports = {
   getJobProposals,
   getSingleProposal,
+  getFreelancerProposal,
   createProposal,
   deleteProposal,
   updateProposal,

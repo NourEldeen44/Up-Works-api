@@ -7,6 +7,7 @@ class IO {
   constructor(io) {
     //server io connection
     io.on("connection", (socket) => {
+      console.log("connection happend socketID: " + socket.id);
       socket.on("user connected", async (user_id) => {
         try {
           const user = await User.findByIdAndUpdate(
@@ -14,26 +15,78 @@ class IO {
             { connected: true },
             { new: true }
           );
+          console.log("switched user state to connected ");
           socket.emit("connectionStateChange", { connected: true });
-          // console.log("connection happend socketID: " + socket.id);
         } catch (error) {
           ioErrorHandler(error, socket);
         }
+        socket.on("disconnect", async () => {
+          console.log("disconnect statred");
+          try {
+            const user = await User.findByIdAndUpdate(
+              user_id,
+              { connected: false },
+              { new: true }
+            );
+            console.log(
+              "socket disconnected and user connection is " + user.connected
+            );
+          } catch (error) {
+            ioErrorHandler(error, socket);
+            console.log(error);
+          }
+        });
       });
+      // socket.on("chat connected", async (user_id) => {
+      //   try {
+      //     const user = await User.findByIdAndUpdate(
+      //       user_id,
+      //       { inChatRoom: true },
+      //       { new: true }
+      //     );
+      //     console.log("switched user state to connected ");
+      //     socket.emit("connectionStateChange", { connected: true });
+      //   } catch (error) {
+      //     ioErrorHandler(error, socket);
+      //   }
+      //   socket.on("disconnect", async () => {
+      //     console.log("disconnect statred");
+      //     try {
+      //       const user = await User.findByIdAndUpdate(
+      //         user_id,
+      //         { inChatRoom: false },
+      //         { new: true }
+      //       );
+      //       console.log(
+      //         "socket disconnected and user chatRoom is " + user.inChatRoom
+      //       );
+      //     } catch (error) {
+      //       ioErrorHandler(error, socket);
+      //       console.log(error);
+      //     }
+      //   });
+      // });
       //on join room
       socket.on("join", (chatRoom_id, user_id) => {
         this.joinChatRoom(chatRoom_id, user_id, socket);
-      });
-      socket.on("disconnect", async () => {
-        try {
-          const user = await User.findByIdAndUpdate(
-            user_id,
-            { connected: false },
-            { new: true }
-          );
-        } catch (error) {
-          ioErrorHandler(error, socket);
-        }
+        console.log("joined!");
+        socket.on("disconnect", async () => {
+          console.log("disconnect statred");
+          try {
+            const user = await User.findByIdAndUpdate(
+              user_id,
+              { inChatRoom: false },
+              { new: true }
+            );
+            console.log(
+              "socket disconnected and user chatRoom is " + user.inChatRoom
+            );
+          } catch (error) {
+            ioErrorHandler(error, socket);
+            console.log(error);
+          }
+        });
+        console.log(socket.rooms);
       });
     });
   }
@@ -53,11 +106,12 @@ class IO {
       //on message
       socket.on("message", (message) => {
         //send to the other user
+        console.log("new message sent " + message);
         socket.broadcast.to(chatRoom_id).emit("new message", `${message}`);
-        // console.log("new message sent " + message);
       });
     } catch (error) {
       ioErrorHandler(error, socket);
+      console.log(error);
     }
   }
   sendSocketMessage() {}

@@ -8,15 +8,19 @@ const getJobs = async (req, res) => {
   //get all client's jobs
   const userStatus = req.user.status;
   let jobs = [];
+  let jobsCount = 0;
+  let pageLimit = 10;
+  let jobPage = 1;
   if (userStatus == "client") {
     const createdBy = req.user.id;
     jobs = await Job.find({ createdBy }).sort("-updatedAt");
+    jobsCount = await Job.countDocuments({ createdBy });
   }
 
   //get freelancer feed
   if (userStatus == "freelancer") {
     const { search, page, limit, numericFilters } = req.query;
-    const queryObj = {};
+    let queryObj = {};
     let skills = req.query.skills;
     //skills
     if (!skills) {
@@ -24,17 +28,26 @@ const getJobs = async (req, res) => {
       if (!user) {
         throw new NotFoundError(`No User Found with id ${req.user.id}`);
       }
-      skills = user.skills;
-    } else {
+      skills = user.skills.join(",");
       const skillList = skills.split(",");
       queryObj.skills = {
         $in: skillList.map((skill) => {
           return new RegExp(skill, "gi");
         }),
       };
+    } else {
+      const skillList = skills.split(",");
+      queryObj.skills = {
+        $all: skillList.map((skill) => {
+          return new RegExp(skill, "gi");
+        }),
+      };
     }
 
     if (search) {
+      //emptying skills from query obj to search normally if search is provided
+      // not to search with normal search and skill search together
+      queryObj = {};
       const trimmedSearch = search.trim();
       queryObj.$or = [
         { title: { $regex: trimmedSearch, $options: "gi" } },
@@ -72,14 +85,15 @@ const getJobs = async (req, res) => {
       result.select(selectList);
     }
     //pagination
-    const jobPage = Number(page) || 1;
-    const pageLimit = Number(limit) || 3;
+    jobPage = Number(page) || 1;
+    pageLimit = Number(limit) || 10;
     const pageSkip = pageLimit * (jobPage - 1);
     result.skip(pageSkip).limit(pageLimit);
     jobs = await result;
+    jobsCount = await Job.countDocuments(queryObj);
   }
-
-  res.status(StatusCodes.OK).json({ jobs, count: jobs.length });
+  const pages = Math.ceil(Number(jobsCount) / pageLimit) || 1;
+  res.status(StatusCodes.OK).json({ jobs, count: jobsCount, pages });
 };
 const getSingleJob = async (req, res) => {
   const jobID = req.params.id;
@@ -98,7 +112,10 @@ const createJob = async (req, res) => {
   const jobData = { title, description, skills: skillsList };
   jobData.createdBy = req.user.id;
   if (req.body.numsOfFreelancers) {
-    userData.numsOfFreelancers = req.body.numsOfFreelancers;
+    jobData.numsOfFreelancers = Number(req.body.numsOfFreelancers);
+  }
+  if (req.body.price) {
+    jobData.price = Number(req.body.price);
   }
   const job = await Job.create(jobData);
 
