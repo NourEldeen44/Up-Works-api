@@ -69,7 +69,7 @@ app.use("/api/v1/jobs", auth, jobsRoutes);
 app.use("/api/v1/chats", auth, chatRoutes);
 app.get("/*", function (req, res) {
   //front-end routes
-  res.sendFile(path.join(__dirname, "build", "index.html"));
+  res.sendFile(path.join(__dirname, "public", "build", "index.html"));
 });
 //notfound
 app.use(notFound);
