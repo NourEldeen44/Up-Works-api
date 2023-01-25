@@ -60,17 +60,17 @@ app.use(helmet());
 app.use(cors({ origin: "https://upworks.onrender.com" }));
 // app.use(cors());
 app.use(xss());
-//front-end routes
 app.use(express.static(path.join(__dirname, "/public/build")));
-app.get("/*", function (req, res) {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
-});
 app.use(express.json());
 
 //routes
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/jobs", auth, jobsRoutes);
 app.use("/api/v1/chats", auth, chatRoutes);
+app.get("/*", function (req, res) {
+  //front-end routes
+  res.sendFile(path.join(__dirname, "build", "index.html"));
+});
 //notfound
 app.use(notFound);
 //errs
