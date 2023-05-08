@@ -50,9 +50,9 @@ const getJobs = async (req, res) => {
       queryObj = {};
       const trimmedSearch = search.trim();
       queryObj.$or = [
-        { title: { $regex: trimmedSearch, $options: "gi" } },
-        { description: { $regex: trimmedSearch, $options: "gi" } },
-        { skills: { $regex: trimmedSearch, $options: "gi" } },
+        { title: { $regex: trimmedSearch, $options: "mi" } },
+        { description: { $regex: trimmedSearch, $options: "mi" } },
+        { skills: { $regex: trimmedSearch, $options: "mi" } },
       ];
       // queryObj.$text = { $search: { $regex: search, $options: "gi" } };
     }

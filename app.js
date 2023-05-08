@@ -57,7 +57,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(limiter);
 app.use(helmet());
 //on deployment
-app.use(cors({ origin: "https://upworks.up.railway.app/" }));
+app.use(cors({ origin: "https://upworks.onrender.com" }));
 // app.use(cors());
 app.use(xss());
 app.use(express.static(path.join(__dirname, "/public/build")));

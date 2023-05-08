@@ -4,7 +4,7 @@ info:
   contact: {}
   version: '1.0'
 servers:
-- url: https://upworks.up.railway.app/api/v1
+- url: https://upworks.onrender.com/api/v1
   variables: {}
 paths:
   /auth/login:
